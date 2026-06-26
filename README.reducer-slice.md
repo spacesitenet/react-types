@@ -1,6 +1,6 @@
 # Redux Reducer Slice Example
 
-```ts
+```c:\Users\Roni\Projects\react-langchain\problem init 1\frontend\src\promptSlice.ts:L1-L72
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type PromptState = {
