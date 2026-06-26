@@ -119,8 +119,8 @@ Use this as a quick reference for the React + TypeScript syntax, event types, an
 | Root state type | `ReturnType<typeof store.getState>` | `export type RootState = ReturnType<typeof store.getState>;` |
 | App dispatch type | `typeof store.dispatch` | `export type AppDispatch = typeof store.dispatch;` |
 | Provider setup | `<Provider store={store}>` | `<Provider store={store}><App /></Provider>` |
-| Typed dispatch hook | `useDispatch.withTypes<AppDispatch>()` | `export const useAppDispatch = useDispatch.withTypes<AppDispatch>();` |
-| Typed selector hook | `useSelector.withTypes<RootState>()` | `export const useAppSelector = useSelector.withTypes<RootState>();` |
+| Typed dispatch | `useDispatch<AppDispatch>()` | `const dispatch = useDispatch<AppDispatch>();` |
+| Typed selector | `(state: RootState) => state.slice.value` | `const count = useSelector((state: RootState) => state.counter.value);` |
 
 ## Redux Slices
 
@@ -142,9 +142,9 @@ Use this as a quick reference for the React + TypeScript syntax, event types, an
 | --- | --- | --- |
 | Dispatch action | `dispatch(actionCreator())` | `dispatch(increment());` |
 | Dispatch payload | `dispatch(actionCreator(value))` | `dispatch(addAmount(5));` |
-| Select state | `useAppSelector((state) => state.slice.value)` | `const count = useAppSelector((state) => state.counter.value);` |
+| Select state | `useSelector((state: RootState) => state.slice.value)` | `const count = useSelector((state: RootState) => state.counter.value);` |
 | Selector function | `(state: RootState) => value` | `export const selectCount = (state: RootState) => state.counter.value;` |
-| Use selector function | `useAppSelector(selector)` | `const count = useAppSelector(selectCount);` |
+| Use selector function | `useSelector(selector)` | `const count = useSelector(selectCount);` |
 
 ## Redux Async And RTK Query
 
