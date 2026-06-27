@@ -70,12 +70,21 @@ Use this as a quick reference for the React + TypeScript syntax, event types, an
 | Textarea change event | `React.ChangeEvent<HTMLTextAreaElement>` | `const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setBio(e.target.value);` |
 | Select change event | `React.ChangeEvent<HTMLSelectElement>` | `const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => setRole(e.target.value);` |
 | Form submit event | `React.FormEvent<HTMLFormElement>` | `const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); };` |
+| Native submit event | `SubmitEvent` | `const submitter = (e.nativeEvent as SubmitEvent).submitter;` |
+| Input event | `React.FormEvent<HTMLInputElement>` | `const handleInput = (e: React.FormEvent<HTMLInputElement>) => setName(e.currentTarget.value);` |
+| Native input event | `InputEvent` | `const inputType = (e.nativeEvent as InputEvent).inputType;` |
+| Before input event | `React.FormEvent<HTMLInputElement>` | `const handleBeforeInput = (e: React.FormEvent<HTMLInputElement>) => {};` |
 | Keyboard event | `React.KeyboardEvent<HTMLInputElement>` | `const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {};` |
 | Focus event | `React.FocusEvent<HTMLInputElement>` | `const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {};` |
 | Blur event | `React.FocusEvent<HTMLInputElement>` | `const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {};` |
 | Clipboard event | `React.ClipboardEvent<HTMLInputElement>` | `const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {};` |
+| Pointer event | `React.PointerEvent<HTMLButtonElement>` | `const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {};` |
+| Touch event | `React.TouchEvent<HTMLDivElement>` | `const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {};` |
 | Drag event | `React.DragEvent<HTMLDivElement>` | `const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {};` |
 | Wheel event | `React.WheelEvent<HTMLDivElement>` | `const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {};` |
+| Scroll event | `React.UIEvent<HTMLDivElement>` | `const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {};` |
+| Composition event | `React.CompositionEvent<HTMLInputElement>` | `const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {};` |
+| Invalid event | `React.InvalidEvent<HTMLInputElement>` | `const handleInvalid = (e: React.InvalidEvent<HTMLInputElement>) => {};` |
 | Animation event | `React.AnimationEvent<HTMLDivElement>` | `const handleAnimationEnd = (e: React.AnimationEvent<HTMLDivElement>) => {};` |
 | Transition event | `React.TransitionEvent<HTMLDivElement>` | `const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {};` |
 | Image load event | `React.SyntheticEvent<HTMLImageElement>` | `const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {};` |
