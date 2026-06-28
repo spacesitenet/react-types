@@ -2,6 +2,20 @@
 
 Use this as a quick reference for the React + TypeScript syntax, event types, and Redux Toolkit patterns you will use most often.
 
+## Installs
+
+Redux Toolkit + React Redux:
+
+```powershell
+npm install @reduxjs/toolkit react-redux
+```
+
+Material UI:
+
+```powershell
+npm install @mui/material @emotion/react @emotion/styled
+```
+
 ## Components And Props
 
 | Topic | Syntax | Example |
