@@ -70,9 +70,7 @@ Use this as a quick reference for the React + TypeScript syntax, event types, an
 | Textarea change event | `React.ChangeEvent<HTMLTextAreaElement>` | `const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setBio(e.target.value);` |
 | Select change event | `React.ChangeEvent<HTMLSelectElement>` | `const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => setRole(e.target.value);` |
 | Form submit event | `React.FormEvent<HTMLFormElement>` | `const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); };` |
-| Native submit event | `SubmitEvent` | `const submitter = (e.nativeEvent as SubmitEvent).submitter;` |
 | Input event | `React.FormEvent<HTMLInputElement>` | `const handleInput = (e: React.FormEvent<HTMLInputElement>) => setName(e.currentTarget.value);` |
-| Native input event | `InputEvent` | `const inputType = (e.nativeEvent as InputEvent).inputType;` |
 | Before input event | `React.FormEvent<HTMLInputElement>` | `const handleBeforeInput = (e: React.FormEvent<HTMLInputElement>) => {};` |
 | Keyboard event | `React.KeyboardEvent<HTMLInputElement>` | `const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {};` |
 | Focus event | `React.FocusEvent<HTMLInputElement>` | `const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {};` |
@@ -94,6 +92,29 @@ Use this as a quick reference for the React + TypeScript syntax, event types, an
 | Number input | Convert `e.target.value` | `<input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} />` |
 | Select input | Use string value | `<select value={role} onChange={(e) => setRole(e.target.value)} />` |
 | Form action | Use `onSubmit` | `<form onSubmit={handleSubmit}>...</form>` |
+
+## Event Handler Type Aliases
+
+| Topic | Syntax | Example |
+| --- | --- | --- |
+| Form submit handler | `React.FormEventHandler<HTMLFormElement>` | `const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => { e.preventDefault(); };` |
+| Input change handler | `React.ChangeEventHandler<HTMLInputElement>` | `const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => setName(e.target.value);` |
+| Textarea change handler | `React.ChangeEventHandler<HTMLTextAreaElement>` | `const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => setBio(e.target.value);` |
+| Select change handler | `React.ChangeEventHandler<HTMLSelectElement>` | `const handleChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => setRole(e.target.value);` |
+| Button click handler | `React.MouseEventHandler<HTMLButtonElement>` | `const handleClick: React.MouseEventHandler<HTMLButtonElement> = () => {};` |
+| Div click handler | `React.MouseEventHandler<HTMLDivElement>` | `const handleClick: React.MouseEventHandler<HTMLDivElement> = () => {};` |
+| Keyboard handler | `React.KeyboardEventHandler<HTMLInputElement>` | `const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {};` |
+| Focus handler | `React.FocusEventHandler<HTMLInputElement>` | `const handleFocus: React.FocusEventHandler<HTMLInputElement> = () => {};` |
+| Blur handler | `React.FocusEventHandler<HTMLInputElement>` | `const handleBlur: React.FocusEventHandler<HTMLInputElement> = () => {};` |
+| Clipboard handler | `React.ClipboardEventHandler<HTMLInputElement>` | `const handlePaste: React.ClipboardEventHandler<HTMLInputElement> = () => {};` |
+| Pointer handler | `React.PointerEventHandler<HTMLButtonElement>` | `const handlePointerDown: React.PointerEventHandler<HTMLButtonElement> = () => {};` |
+| Touch handler | `React.TouchEventHandler<HTMLDivElement>` | `const handleTouchStart: React.TouchEventHandler<HTMLDivElement> = () => {};` |
+| Drag handler | `React.DragEventHandler<HTMLDivElement>` | `const handleDragStart: React.DragEventHandler<HTMLDivElement> = () => {};` |
+| Wheel handler | `React.WheelEventHandler<HTMLDivElement>` | `const handleWheel: React.WheelEventHandler<HTMLDivElement> = () => {};` |
+| Scroll handler | `React.UIEventHandler<HTMLDivElement>` | `const handleScroll: React.UIEventHandler<HTMLDivElement> = () => {};` |
+| Composition handler | `React.CompositionEventHandler<HTMLInputElement>` | `const handleCompositionEnd: React.CompositionEventHandler<HTMLInputElement> = () => {};` |
+| Animation handler | `React.AnimationEventHandler<HTMLDivElement>` | `const handleAnimationEnd: React.AnimationEventHandler<HTMLDivElement> = () => {};` |
+| Transition handler | `React.TransitionEventHandler<HTMLDivElement>` | `const handleTransitionEnd: React.TransitionEventHandler<HTMLDivElement> = () => {};` |
 
 ## Refs
 
