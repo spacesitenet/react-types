@@ -1,26 +1,51 @@
-# Redux Reducer Slice Example
+# Redux Store And Reducer Slice Example
 
-```c:\Users\Roni\Projects\react-langchain\problem init 1\frontend\src\promptSlice.ts:L1-L72
+## itemSlice.ts
+
+```ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type PromptState = {
-  userPrompt: string;
+type ItemState = {
+  value: string;
 };
 
-const initialState: PromptState = {
-  userPrompt: "",
+const initialState: ItemState = {
+  value: "",
 };
 
-const promptSlice = createSlice({
-  name: "prompt",
+const itemSlice = createSlice({
+  name: "item",
   initialState,
   reducers: {
-    setUserPrompt: (state, action: PayloadAction<string>) => {
-      state.userPrompt = action.payload;
+    setValue: (state, action: PayloadAction<string>) => {
+      state.value = action.payload;
+    },
+    clearValue: (state) => {
+      state.value = "";
     },
   },
 });
 
-export const { setUserPrompt } = promptSlice.actions;
-export default promptSlice.reducer;
+export const { setValue, clearValue } = itemSlice.actions;
+export default itemSlice.reducer;
+```
+
+## store.ts
+
+```ts
+import { configureStore } from "@reduxjs/toolkit";
+import itemReducer from "./itemSlice";
+
+export function createAppStore() {
+  return configureStore({
+    reducer: {
+      item: itemReducer,
+    },
+  });
+}
+
+export const store = createAppStore();
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 ```
