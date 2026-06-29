@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import { docs } from "./docs";
 import type { Doc } from "./docs";
 import MarkdownRenderer, { slugify } from "./MarkdownRenderer";
@@ -26,6 +32,28 @@ function getWordCount(doc: Doc) {
   return doc.content.split(/\s+/).filter(Boolean).length;
 }
 
+function getSearchPreview(doc: Doc, query: string): string {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return doc.description;
+  }
+
+  const content = doc.content.replace(/\s+/g, " ");
+  const matchIndex = content.toLowerCase().indexOf(normalizedQuery);
+
+  if (matchIndex === -1) {
+    return doc.description;
+  }
+
+  const start = Math.max(0, matchIndex - 48);
+  const end = Math.min(content.length, matchIndex + normalizedQuery.length + 88);
+  const prefix = start > 0 ? "..." : "";
+  const suffix = end < content.length ? "..." : "";
+
+  return `${prefix}${content.slice(start, end).trim()}${suffix}`;
+}
+
 export default function App() {
   const [activeSlug, setActiveSlug] = useState(() => {
     // Try to load from URL hash first, e.g., #redux-store-slice
@@ -42,8 +70,11 @@ export default function App() {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState<string>("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeSearchIndex, setActiveSearchIndex] = useState(0);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync theme with document class
   useEffect(() => {
@@ -77,9 +108,10 @@ export default function App() {
 
   // Keyboard shortcut Ctrl+K or Cmd+K to focus search
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
+        setSearchOpen(true);
         searchInputRef.current?.focus();
       }
     };
@@ -100,6 +132,54 @@ export default function App() {
       return searchableText.toLowerCase().includes(normalizedQuery);
     });
   }, [query]);
+
+  const autocompleteResults = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return docs.slice(0, 6);
+    }
+
+    return [...docs]
+      .map((doc) => {
+        const title = doc.title.toLowerCase();
+        const category = doc.category.toLowerCase();
+        const description = doc.description.toLowerCase();
+        const content = doc.content.toLowerCase();
+        let score = 0;
+
+        if (title === normalizedQuery) score += 100;
+        if (title.startsWith(normalizedQuery)) score += 60;
+        if (title.includes(normalizedQuery)) score += 40;
+        if (category.includes(normalizedQuery)) score += 24;
+        if (description.includes(normalizedQuery)) score += 18;
+        if (content.includes(normalizedQuery)) score += 8;
+
+        return { doc, score };
+      })
+      .filter((result) => result.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((result) => result.doc)
+      .slice(0, 8);
+  }, [query]);
+
+  useEffect(() => {
+    setActiveSearchIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setSearchOpen(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
 
   // Group documents by category for the sidebar
   const groupedDocs = useMemo(() => {
@@ -159,6 +239,44 @@ export default function App() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const selectSearchResult = (doc: Doc) => {
+    setActiveSlug(doc.slug);
+    setSearchOpen(false);
+    setQuery("");
+    setSidebarOpen(false);
+  };
+
+  const handleSearchKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (!searchOpen && ["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) {
+      setSearchOpen(true);
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (autocompleteResults.length === 0) return;
+      setActiveSearchIndex((currentIndex) =>
+        Math.min(currentIndex + 1, autocompleteResults.length - 1),
+      );
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (autocompleteResults.length === 0) return;
+      setActiveSearchIndex((currentIndex) => Math.max(currentIndex - 1, 0));
+    }
+
+    if (event.key === "Enter" && autocompleteResults[activeSearchIndex]) {
+      event.preventDefault();
+      selectSearchResult(autocompleteResults[activeSearchIndex]);
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setSearchOpen(false);
+      searchInputRef.current?.blur();
+    }
+  };
+
   return (
     <div className="app-shell">
       {/* Top Header Navigation */}
@@ -186,7 +304,7 @@ export default function App() {
         </div>
 
         <div className="header-right">
-          <div className="search-container">
+          <div className="search-container" ref={searchContainerRef}>
             <input
               ref={searchInputRef}
               id="doc-search"
@@ -195,11 +313,83 @@ export default function App() {
               placeholder="Search docs..."
               value={query}
               onChange={(event) => setQuery(event.target.value)}
+              onFocus={() => setSearchOpen(true)}
+              onKeyDown={handleSearchKeyDown}
+              role="combobox"
+              aria-expanded={searchOpen}
+              aria-controls="search-autocomplete"
+              aria-activedescendant={
+                searchOpen && autocompleteResults[activeSearchIndex]
+                  ? `search-result-${autocompleteResults[activeSearchIndex].slug}`
+                  : undefined
+              }
               aria-label="Search documentation"
             />
             <span className="search-shortcut">
               <kbd>⌘</kbd>K
             </span>
+
+            {searchOpen ? (
+              <div
+                className="search-menu"
+                id="search-autocomplete"
+                role="listbox"
+                aria-label="Search suggestions"
+              >
+                <div className="search-menu-header">
+                  <span>{query.trim() ? "Search results" : "Popular guides"}</span>
+                  <small>{autocompleteResults.length} found</small>
+                </div>
+
+                {autocompleteResults.length > 0 ? (
+                  <div className="search-results">
+                    {autocompleteResults.map((doc, index) => (
+                      <button
+                        className={
+                          index === activeSearchIndex
+                            ? "search-result active"
+                            : "search-result"
+                        }
+                        id={`search-result-${doc.slug}`}
+                        key={doc.slug}
+                        type="button"
+                        role="option"
+                        aria-selected={index === activeSearchIndex}
+                        onMouseEnter={() => setActiveSearchIndex(index)}
+                        onClick={() => selectSearchResult(doc)}
+                      >
+                        <span className="search-result-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                          </svg>
+                        </span>
+                        <span className="search-result-body">
+                          <span className="search-result-topline">
+                            <strong>{doc.title}</strong>
+                            <small>{doc.category}</small>
+                          </span>
+                          <span className="search-result-preview">
+                            {getSearchPreview(doc, query)}
+                          </span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="search-empty">
+                    <strong>No matches found</strong>
+                    <span>Try searching for Redux, MUI, events, testing, or thunk.</span>
+                  </div>
+                )}
+
+                <div className="search-menu-footer">
+                  <span>↑↓ Navigate</span>
+                  <span>Enter Open</span>
+                  <span>Esc Close</span>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <button
