@@ -1,8 +1,23 @@
-import type { ReactNode } from "react";
+import { useState, useMemo, type ReactNode } from "react";
+import Prism from "prismjs";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-powershell";
+import "prismjs/components/prism-bash";
 
 type MarkdownRendererProps = {
   markdown: string;
 };
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+    .trim()
+    .replace(/\s+/g, "-"); // replace spaces with hyphens
+}
 
 function renderInline(text: string): ReactNode[] {
   const parts = text.split(/(`[^`]+`)/g);
@@ -29,6 +44,81 @@ function parseTableRow(line: string) {
     .map((cell) => cell.trim());
 }
 
+function highlightCode(code: string, language?: string): string {
+  if (!language) return code;
+
+  const langMap: Record<string, string> = {
+    ts: "typescript",
+    typescript: "typescript",
+    tsx: "tsx",
+    js: "javascript",
+    javascript: "javascript",
+    jsx: "jsx",
+    powershell: "powershell",
+    bash: "bash",
+    shell: "bash",
+  };
+
+  const prismLangName = langMap[language.toLowerCase()];
+  const grammar = prismLangName ? Prism.languages[prismLangName] : null;
+
+  if (grammar) {
+    return Prism.highlight(code, grammar, prismLangName || language);
+  }
+  return code;
+}
+
+function CodeBlock({ code, language }: { code: string; language?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const highlightedHtml = useMemo(() => {
+    return highlightCode(code, language);
+  }, [code, language]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy code: ", err);
+    }
+  };
+
+  return (
+    <div className="code-card">
+      <div className="code-card-header">
+        {language ? <span className="code-language">{language}</span> : <span />}
+        <button className="copy-button" onClick={handleCopy} type="button" aria-label="Copy code to clipboard">
+          {copied ? (
+            <span className="copy-success">
+              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Copied!
+            </span>
+          ) : (
+            <span className="copy-text">
+              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              Copy
+            </span>
+          )}
+        </button>
+      </div>
+      <pre>
+        {language ? (
+          <code dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+        ) : (
+          <code>{code}</code>
+        )}
+      </pre>
+    </div>
+  );
+}
+
 export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const nodes: ReactNode[] = [];
@@ -52,13 +142,14 @@ export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
         index += 1;
       }
 
+      const codeContent = codeLines.join("\n");
+
       nodes.push(
-        <div className="code-card" key={`code-${index}`}>
-          {language ? <span className="code-language">{language}</span> : null}
-          <pre>
-            <code>{codeLines.join("\n")}</code>
-          </pre>
-        </div>,
+        <CodeBlock
+          key={`code-${index}`}
+          code={codeContent}
+          language={language}
+        />
       );
       index += 1;
       continue;
@@ -79,8 +170,8 @@ export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
           <table>
             <thead>
               <tr>
-                {headers.map((header) => (
-                  <th key={header}>{renderInline(header)}</th>
+                {headers.map((header, hIdx) => (
+                  <th key={`th-${hIdx}`}>{renderInline(header)}</th>
                 ))}
               </tr>
             </thead>
@@ -100,19 +191,22 @@ export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
     }
 
     if (line.startsWith("# ")) {
-      nodes.push(<h1 key={`h1-${index}`}>{renderInline(line.slice(2))}</h1>);
+      const text = line.slice(2);
+      nodes.push(<h1 id={slugify(text)} key={`h1-${index}`}>{renderInline(text)}</h1>);
       index += 1;
       continue;
     }
 
     if (line.startsWith("## ")) {
-      nodes.push(<h2 key={`h2-${index}`}>{renderInline(line.slice(3))}</h2>);
+      const text = line.slice(3);
+      nodes.push(<h2 id={slugify(text)} key={`h2-${index}`}>{renderInline(text)}</h2>);
       index += 1;
       continue;
     }
 
     if (line.startsWith("### ")) {
-      nodes.push(<h3 key={`h3-${index}`}>{renderInline(line.slice(4))}</h3>);
+      const text = line.slice(4);
+      nodes.push(<h3 id={slugify(text)} key={`h3-${index}`}>{renderInline(text)}</h3>);
       index += 1;
       continue;
     }
@@ -127,8 +221,8 @@ export default function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
 
       nodes.push(
         <ul key={`ul-${index}`}>
-          {items.map((item) => (
-            <li key={item}>{renderInline(item)}</li>
+          {items.map((item, itemIdx) => (
+            <li key={`li-${itemIdx}`}>{renderInline(item)}</li>
           ))}
         </ul>,
       );
