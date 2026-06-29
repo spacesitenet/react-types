@@ -216,8 +216,6 @@ body {
   grid-template-columns: 300px minmax(0, 1fr) 260px;
   min-height: calc(100vh - 4rem);
   width: 100%;
-  max-width: 1920px;
-  margin: 0 auto;
 }
 
 /* Sidebar Navigation */
@@ -290,8 +288,7 @@ body {
 }
 
 .content-container {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 /* Breadcrumbs */
