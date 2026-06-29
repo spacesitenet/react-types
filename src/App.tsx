@@ -178,7 +178,6 @@ export default function App() {
           </button>
 
           <a className="brand" href="#top" onClick={() => setActiveSlug(docs[0].slug)}>
-            <span className="brand-mark">RT</span>
             <span className="brand-text">
               <strong className="brand-title">{siteName}</strong>
               <small className="brand-subtitle font-medium">Interactive Reference Guide</small>
