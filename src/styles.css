@@ -428,6 +428,15 @@ body {
   transition: background-color 0.2s ease;
 }
 
+.markdown code.inline-code {
+  white-space: nowrap;
+}
+
+td .inline-code {
+  display: inline-block;
+  margin: 0.05rem 0;
+}
+
 /* Code Blocks */
 .code-card {
   margin: 1.5rem 0;

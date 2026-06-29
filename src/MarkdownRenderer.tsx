@@ -19,12 +19,38 @@ export function slugify(text: string): string {
     .replace(/\s+/g, "-"); // replace spaces with hyphens
 }
 
+function escapeHtml(code: string): string {
+  return code
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getInlineLanguage(code: string): string {
+  if (/^(npm|pnpm|yarn|npx)\s/.test(code)) {
+    return "bash";
+  }
+
+  return "tsx";
+}
+
 function renderInline(text: string): ReactNode[] {
   const parts = text.split(/(`[^`]+`)/g);
 
   return parts.map((part, index) => {
     if (part.startsWith("`") && part.endsWith("`")) {
-      return <code key={index}>{part.slice(1, -1)}</code>;
+      const code = part.slice(1, -1);
+      const language = getInlineLanguage(code);
+
+      return (
+        <code
+          className={`inline-code language-${language}`}
+          dangerouslySetInnerHTML={{ __html: highlightCode(code, language) }}
+          key={index}
+        />
+      );
     }
 
     return part;
@@ -36,12 +62,40 @@ function isTableSeparator(line: string) {
 }
 
 function parseTableRow(line: string) {
-  return line
-    .trim()
-    .replace(/^\|/, "")
-    .replace(/\|$/, "")
-    .split("|")
-    .map((cell) => cell.trim());
+  const trimmed = line.trim();
+  const row = trimmed.startsWith("|") ? trimmed.slice(1) : trimmed;
+  const withoutTrailingPipe = row.endsWith("|") ? row.slice(0, -1) : row;
+  const cells: string[] = [];
+  let currentCell = "";
+  let inCodeSpan = false;
+
+  for (let index = 0; index < withoutTrailingPipe.length; index += 1) {
+    const char = withoutTrailingPipe[index];
+    const nextChar = withoutTrailingPipe[index + 1];
+
+    if (char === "\\" && nextChar === "|") {
+      currentCell += "|";
+      index += 1;
+      continue;
+    }
+
+    if (char === "`") {
+      inCodeSpan = !inCodeSpan;
+      currentCell += char;
+      continue;
+    }
+
+    if (char === "|" && !inCodeSpan) {
+      cells.push(currentCell.trim());
+      currentCell = "";
+      continue;
+    }
+
+    currentCell += char;
+  }
+
+  cells.push(currentCell.trim());
+  return cells;
 }
 
 function highlightCode(code: string, language?: string): string {
@@ -65,7 +119,7 @@ function highlightCode(code: string, language?: string): string {
   if (grammar) {
     return Prism.highlight(code, grammar, prismLangName || language);
   }
-  return code;
+  return escapeHtml(code);
 }
 
 function CodeBlock({ code, language }: { code: string; language?: string }) {
