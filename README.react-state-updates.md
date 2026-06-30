@@ -22,7 +22,7 @@ Use direct updates when the value comes directly from the event or from a known 
 const [name, setName] = useState("");
 const [count, setCount] = useState(0);
 
-setName("Roni");
+setName("Alex");
 setCount(10);
 ```
 
@@ -93,7 +93,7 @@ type User = {
 
 const [user, setUser] = useState<User>({
   id: "1",
-  name: "Roni",
+  name: "Alex",
   email: "roni@example.com",
 });
 
@@ -184,7 +184,7 @@ type Settings = {
 
 const [settings, setSettings] = useState<Settings>({
   profile: {
-    name: "Roni",
+    name: "Alex",
     theme: "light",
   },
 });

@@ -55,7 +55,7 @@ npm install @mui/material @emotion/react @emotion/styled
 | Number state | `useState<number>(0)` | `const [count, setCount] = useState<number>(0);` |
 | Boolean state | `useState<boolean>(false)` | `const [open, setOpen] = useState<boolean>(false);` |
 | Array state | `useState<Type[]>([])` | `const [items, setItems] = useState<string[]>([]);` |
-| Object state | `useState<Type>({...})` | `const [user, setUser] = useState<User>({ id: 1, name: "Roni" });` |
+| Object state | `useState<Type>({...})` | `const [user, setUser] = useState<User>({ id: 1, name: "Alex" });` |
 | Nullable state | `useState<Type \| null>(null)` | `const [user, setUser] = useState<User \| null>(null);` |
 | Effect hook | `useEffect(() => {}, [])` | `useEffect(() => { document.title = name; }, [name]);` |
 | Memo hook | `useMemo(() => value, deps)` | `const total = useMemo(() => items.length, [items]);` |
