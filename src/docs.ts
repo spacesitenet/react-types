@@ -1,5 +1,6 @@
 import mainReference from "../README.md?raw";
 import asyncThunkSlice from "../README.async-thunk-slice.md?raw";
+import databricksMedallion from "../README.databricks-medallion.md?raw";
 import muiColors from "../README.mui-colors.md?raw";
 import reactStateUpdates from "../README.react-state-updates.md?raw";
 import reducerSlice from "../README.reducer-slice.md?raw";
@@ -49,6 +50,13 @@ export const docs: Doc[] = [
     description: "Useful MUI palette tokens sorted by practical frequency.",
     category: "Material UI",
     content: muiColors,
+  },
+  {
+    slug: "databricks-etl-medallion",
+    title: "Databricks ETL Medallion Pipeline",
+    description: "A simplified, interview-focused Bronze, Silver, and Gold Delta Lake pipeline.",
+    category: "Databricks",
+    content: databricksMedallion,
   },
   {
     slug: "react-testing",

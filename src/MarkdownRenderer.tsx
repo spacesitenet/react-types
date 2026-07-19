@@ -6,6 +6,8 @@ import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
 import "prismjs/components/prism-powershell";
 import "prismjs/components/prism-bash";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-json";
 
 type MarkdownRendererProps = {
   markdown: string;
@@ -111,6 +113,9 @@ function highlightCode(code: string, language?: string): string {
     powershell: "powershell",
     bash: "bash",
     shell: "bash",
+    py: "python",
+    python: "python",
+    json: "json",
   };
 
   const prismLangName = langMap[language.toLowerCase()];
