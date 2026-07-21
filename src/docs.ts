@@ -1,6 +1,7 @@
 import mainReference from "../README.md?raw";
 import asyncThunkSlice from "../README.async-thunk-slice.md?raw";
 import databricksMedallion from "../README.databricks-medallion.md?raw";
+import djangoReference from "../README.django.md?raw";
 import muiColors from "../README.mui-colors.md?raw";
 import reactStateUpdates from "../README.react-state-updates.md?raw";
 import reducerSlice from "../README.reducer-slice.md?raw";
@@ -57,6 +58,13 @@ export const docs: Doc[] = [
     description: "A simplified, interview-focused Bronze, Silver, and Gold Delta Lake pipeline.",
     category: "Databricks",
     content: databricksMedallion,
+  },
+  {
+    slug: "django-reference-guide",
+    title: "Django Reference Guide",
+    description: "Generic Django patterns for models, views, services, ORM queries, filtering, sorting, APIs, and tests.",
+    category: "Django",
+    content: djangoReference,
   },
   {
     slug: "react-testing",
